@@ -96,7 +96,7 @@ visitors %>% filter(attraction == "National Museum of Scotland")
 _Which attraction had exactly 565,772 visitors in 2022?_
 
 ```{r Ex_d}
-#visitors %>% filter(___ == ____)
+visitors %>% filter(n_2022 == 565772)
 ```
 
 ### Exercise e.
@@ -104,9 +104,9 @@ _Which attraction had exactly 565,772 visitors in 2022?_
 _How many attraction had more than 1 million visitors in 2022?_
 
 ```{r Ex_e}
-#visitors %>% 
-#  filter(____) %>%
-#  count()
+visitors %>% 
+  filter(n_2022 > 1000000) %>%
+  count()
 ```
 
 ## Question 5
@@ -129,11 +129,11 @@ visitors %>%
 _How many attractions had between 50,000 and 100,000 visitors in 2022?_
 
 ```{r Ex_f}
-#visitors %>% 
-#  ____(
-#    ______,
-#    ______ ) %>%
-#  count()
+visitors %>% 
+  filter(
+    n_2022 > 50000,
+    n_2022 < 100000 ) %>%
+  count()
 ```
 
 ### Exercise g.
@@ -141,9 +141,10 @@ _How many attractions had between 50,000 and 100,000 visitors in 2022?_
 _How many regions have more than 50 tourist attraction in the data set? (Hint: You will need to tabulate the data before filtering.)_
 
 ```{r Ex_g}
-#visitors %>% 
-#  _____(region) %>%
-#  filter(______)
+visitors %>% 
+  count(region) %>%
+  filter(n > 50) %>%
+  count()
 ```
 
 
@@ -168,20 +169,19 @@ visitors %>%
 _Perform the same calculation for the 2021 admissions data._
 
 ```{r Ex_h}
-#visitors %>% 
-#  ______(
-#    __________,
-#    __________
-#  )
+visitors %>% 
+  summarise(
+    mean_2021 = mean(n_2021, na.rm = TRUE),
+    med_2021 = median(n_2021, na.rm = TRUE)
+  )
 ```
 
-All values in the output are `NA`!
 
 ### Exercise i.
 
 _What does `NA` stand for and why are you getting this as your answer to the previous question._
 
-**Write your answer here**
+NA stands for not available and means that the mean/median cannot be computed because the NA values in the data set have not been removed and both mean and median only take floats as their values, so will not work with NA values. However the NA values have been removed by na.rm = TRUE and hence the answer to my previous question is fine.
 
 
 
@@ -190,7 +190,7 @@ _What does `NA` stand for and why are you getting this as your answer to the pre
 
 _Look at the help pages for the `mean()` and `median()` commands to see what the input argument `na.rm` does. Edit your code from exercise h so that it computes the summary statistics where data is available._
 
-**Write your answer here**
+Not edited as done from the start.
 
 
 
@@ -212,7 +212,7 @@ visitors %>%
 
 _Observe in question 6 that the mean statistics across all settings are much larger than the corresponding median statistics. Discuss in your group what this suggests about the data._
 
-**Write your answer here**
+This suggests that the data has some outliers with greatly more visits than the rest of the data set, which would not impact the median but would skew the data, hence the mean would be greater.
 
 
 
@@ -245,8 +245,9 @@ _How many tourist attractions are there in each of the 4 nations? From this, dis
 
 
 ```{r Ex_l}
-#________ %>%
-#  ______(_______)
+visitors_with_nations %>%
+  group_by(nation) %>%
+  count()
 ```
 
 
@@ -258,8 +259,43 @@ _How many tourist attractions are there in each of the 4 nations? From this, dis
 _Within each of the 4 nations, what is the proportion of tourist attractions that have free admission for all visitors?_
 
 ```{r Ex_m}
-# Write your code here
+free_admission <- visitors_with_nations %>%
+                    filter(admission == "Free")
 
+england_free <- free_admission %>%
+                  filter(nation == "England") %>%
+                  nrow()
+scotland_free <- free_admission %>%
+                  filter(nation == "Scotland") %>%
+                  nrow()
+wales_free <- free_admission %>%
+                  filter(nation == "Wales") %>%
+                  nrow()
+nireland_free <- free_admission %>%
+                  filter(nation == "Northern Ireland") %>%
+                  nrow()
+
+england <- visitors_with_nations %>%
+              filter(nation == "England") %>%
+              nrow()
+prop_eng <- england_free / england
+scotland <- visitors_with_nations %>%
+              filter(nation == "Scotland") %>%
+              nrow()
+prop_scot <- scotland_free / scotland
+wales <- visitors_with_nations %>%
+              filter(nation == "Wales") %>%
+              nrow()
+prop_wales <- wales_free / wales
+nireland <- visitors_with_nations %>%
+              filter(nation == "Northern Ireland") %>%
+              nrow()
+prop_ire <- nireland_free / nireland
+
+proportions <- tibble(region = c("England", "Scotland", "Wales", "Northern Ireland"),
+                      c(prop_eng, prop_scot, prop_wales, prop_ire)
+                      )
+proportions
 
 ```
 
